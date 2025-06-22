@@ -48,3 +48,4 @@ for idx, timer in enumerate(st.session_state.timers):
         st.write(f"⏱ Zeit: **{format_time(timer['elapsed'])}**")
 
     st.divider()
+add streamlit app
