@@ -3,7 +3,7 @@ import time
 
 # Page Setup
 st.set_page_config(layout="wide")
-st.title("🕒 Schüeli-Timer")
+st.title("🕒 Kompakter 10-fach Kinder-Timer")
 
 # Timer-Init
 if "timers" not in st.session_state:
@@ -27,7 +27,12 @@ for row in range(2):
 
         with timer_cols[i]:
             st.markdown(f"**{timer['name']}**")
-            st.markdown(f"🕒 {format_time(timer['elapsed'])}", help="Aktuelle Zeit")
+
+            # Laufzeit aktualisieren, falls aktiv
+            if timer["running"]:
+                timer["elapsed"] = time.time() - timer["start_time"]
+
+            st.metric(label="Zeit", value=format_time(timer["elapsed"]))
 
             btn_cols = st.columns([1, 1, 1])
             with btn_cols[0]:
@@ -48,7 +53,3 @@ for row in range(2):
                     timer["elapsed"] = 0.0
                     timer["running"] = False
 
-            # Zeit aktualisieren, wenn aktiv
-            if timer["running"]:
-                timer["elapsed"] = time.time() - timer["start_time"]
-                st.experimental_rerun()
