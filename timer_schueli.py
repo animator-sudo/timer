@@ -3,31 +3,31 @@ import time
 import base64
 from streamlit_autorefresh import st_autorefresh
 
-# Auto-Refresh alle 1 Sekunde, damit die Timer dynamisch aktualisieren
+# Auto-Refresh alle 1 Sekunde, damit die Timer dynamisch aktualisiert werden
 st_autorefresh(interval=1000, key="refresh")
 
 # Seiteneinstellungen und Überschrift
 st.set_page_config(page_title="Ilgen Lions Timer", layout="wide")
 st.title("Ilgen Lions Timer")
-st.write("Drücke 'Start', um den Timer zu starten, 'Pause' zum Anhalten und 'Reset', um den Timer zurückzusetzen.")
+st.write("Drücke 'Start', um den Timer zu starten, 'Pause', um anzuhalten und 'Reset', um den Timer zurückzusetzen.")
 
 # Hintergrundbild laden und als Base64 kodieren
 with open("ilgen_lions.png", "rb") as f:
     img_data = f.read()
 b64 = base64.b64encode(img_data).decode()
 
-# CSS einbinden: Adaptiver Hintergrund und Basis-Styling für die Timer-Boxen sowie Button-Text
+# CSS einbinden: Adaptiver Hintergrund und Basis-Styling
 st.markdown(
     f"""
     <style>
-    /* Adaptiver Hintergrund mit dezenter Transparenz */
+    /* Adaptiver Hintergrund mit leicht transparenter Überlagerung */
     .stApp {{
          background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), 
          url("data:image/png;base64,{b64}");
          background-size: cover;
          background-position: center;
     }}
-    /* Basis-Styling für die Timer-Box (Hintergrund wird dynamisch gesetzt) */
+    /* Basis-Styling für die Timer-Box */
     .timer-box {{
          padding: 10px;
          border-radius: 8px;
@@ -44,29 +44,4 @@ st.markdown(
 )
 
 # Kindernamen alphabetisch nach Anfangsbuchstaben sortieren
-children_names = sorted([
-    "Annabelle", "Charlotte", "Elena", "Ella", "Filippa",
-    "Ida", "Luisa", "Meliah", "Noemi", "Uliana"
-], key=lambda name: (name[0], name))
-
-# Timer-Initialisierung in der Session (nur einmal)
-if "timers" not in st.session_state:
-    st.session_state.timers = [
-        {"name": name, "elapsed": 0.0, "running": False, "start_time": None}
-        for name in children_names
-    ]
-
-# Funktion zur Formatierung der Zeit im Format mm:ss
-def format_time(seconds):
-    minutes = int(seconds // 60)
-    sec = int(seconds % 60)
-    return f"{minutes:02d}:{sec:02d}"
-
-# Funktion, die basierend auf der verstrichenen Zeit die Hintergrundfarbe liefert
-def get_bg_color(elapsed):
-    if elapsed < 60:
-        return "white"
-    elif elapsed < 120:
-        return "yellow"
-    elif elapsed < 180:
-        return "
+children_names = sorted(
