@@ -6,7 +6,7 @@ from streamlit_autorefresh import st_autorefresh
 # Auto-Refresh alle 1 Sekunde
 st_autorefresh(interval=1000, key="timer_refresh")
 
-# Layout
+# Layout festlegen
 st.set_page_config(layout="wide")
 st.title("🕒 Kompakter 10-fach Kinder-Timer")
 
@@ -15,7 +15,7 @@ with open("ilgen_lions.png", "rb") as f:
     encoded = f.read()
 b64 = base64.b64encode(encoded).decode()
 
-# Responsive CSS für das Hintergrundbild
+# CSS für responsives Hintergrundbild
 st.markdown(
     f"""
     <style>
@@ -38,7 +38,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Kindernamen alphabetisch sortieren
+# Alphabetisch sortierte Kindernamen
 kinder_namen = [
     "Annabelle", "Charlotte", "Elena", "Ella", "Filippa",
     "Ida", "Luisa", "Meliah", "Noemi", "Uliana"
@@ -52,12 +52,7 @@ if "timers" not in st.session_state:
         for name in kinder_namen
     ]
 
-# Zeitformat-Funktion
+# Funktion zur Formatierung der Zeit
 def format_time(seconds):
     minutes = int(seconds // 60)
     sec = int(seconds % 60)
-    return f"{minutes:02d}:{sec:02d}"
-
-# Timer anzeigen (2 Reihen à 5 Timer)
-for row in range(2):
-    timer_cols
