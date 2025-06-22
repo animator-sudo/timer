@@ -1,7 +1,11 @@
 import streamlit as st
 import time
+from streamlit_autorefresh import st_autorefresh
 
-# Page Setup
+# Alle 1 Sekunde automatisch neu laden
+st_autorefresh(interval=1000, key="timer_refresh")
+
+# Layout
 st.set_page_config(layout="wide")
 st.title("🕒 Kompakter 10-fach Kinder-Timer")
 
@@ -28,7 +32,7 @@ for row in range(2):
         with timer_cols[i]:
             st.markdown(f"**{timer['name']}**")
 
-            # Laufzeit aktualisieren, falls aktiv
+            # Laufzeit aktualisieren
             if timer["running"]:
                 timer["elapsed"] = time.time() - timer["start_time"]
 
