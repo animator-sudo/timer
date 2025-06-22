@@ -16,7 +16,7 @@ with open("ilgen_lions.png", "rb") as f:
     img_data = f.read()
 b64 = base64.b64encode(img_data).decode()
 
-# CSS einbinden: Adaptiver Hintergrund und Basis-Styling
+# CSS einbinden: Adaptiver Hintergrund, Basis-Styling und weiße Schrift außer Buttons
 st.markdown(
     f"""
     <style>
@@ -26,6 +26,7 @@ st.markdown(
          url("data:image/png;base64,{b64}");
          background-size: cover;
          background-position: center;
+         color: white;  /* Alle Texte weiß */
     }}
     /* Basis-Styling für die Timer-Box */
     .timer-box {{
@@ -33,6 +34,7 @@ st.markdown(
          border-radius: 8px;
          text-align: center;
          margin-bottom: 10px;
+         color: white;  /* Text in Box auch weiß */
     }}
     /* Button-Text bleibt schwarz */
     .stButton button {{
