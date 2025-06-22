@@ -15,7 +15,7 @@ with open("ilgen_lions.png", "rb") as f:
     encoded = f.read()
 b64 = base64.b64encode(encoded).decode()
 
-# Responsive CSS mit Media Query
+# Responsive CSS für das Hintergrundbild
 st.markdown(
     f"""
     <style>
@@ -38,7 +38,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Alphabetisch sortierte Kindernamen
+# Kindernamen alphabetisch sortieren
 kinder_namen = [
     "Annabelle", "Charlotte", "Elena", "Ella", "Filippa",
     "Ida", "Luisa", "Meliah", "Noemi", "Uliana"
@@ -52,5 +52,12 @@ if "timers" not in st.session_state:
         for name in kinder_namen
     ]
 
-# Zeitformatierer
-def format_time
+# Zeitformat-Funktion
+def format_time(seconds):
+    minutes = int(seconds // 60)
+    sec = int(seconds % 60)
+    return f"{minutes:02d}:{sec:02d}"
+
+# Timer anzeigen (2 Reihen à 5 Timer)
+for row in range(2):
+    timer_cols
