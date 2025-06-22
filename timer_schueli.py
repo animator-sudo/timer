@@ -10,12 +10,12 @@ st_autorefresh(interval=1000, key="timer_refresh")
 st.set_page_config(layout="wide")
 st.title("🕒 Kompakter 10-fach Kinder-Timer")
 
-# Bild laden und codieren
+# Hintergrundbild einlesen & codieren
 with open("ilgen_lions.png", "rb") as f:
     encoded = f.read()
 b64 = base64.b64encode(encoded).decode()
 
-# CSS mit dunklem Overlay und responsive Design
+# CSS einbinden – sicheres Format mit abgeschlossenen Strings & Klammern
 st.markdown(
     f'''
     <style>
@@ -28,6 +28,31 @@ st.markdown(
         background-attachment: fixed;
         color: white;
     }}
+    @media only screen and (max-width: 768px) {{
+        .stApp {{
+            background-size: contain;
+            background-position: top center;
+            background-attachment: scroll;
+        }}
+    }}
+    h1, h2, h3, h4, h5, h6, .stMetric, .stButton, .stMarkdown {{
+        color: white !important;
+    }}
+    .timer-box {{
+        background-color: rgba(0, 0, 0, 0.5);
+        padding: 1em;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        margin-bottom: 10px;
+    }}
+    </style>
+    ''',
+    unsafe_allow_html=True
+)
 
-    @media only
-    
+# Kindernamen alphabetisch
+kinder_namen = [
+    "Annabelle", "Charlotte", "Elena", "Ella", "Filippa",
+    "Ida", "Luisa", "Meliah", "Noemi", "Uliana"
+]
+kinder_namen.sort
