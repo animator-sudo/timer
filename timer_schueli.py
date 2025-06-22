@@ -15,7 +15,7 @@ with open("ilgen_lions.png", "rb") as f:
     encoded = f.read()
 b64 = base64.b64encode(encoded).decode()
 
-# CSS mit dunklem Overlay und besserer Lesbarkeit
+# CSS mit dunklem Overlay und responsive Design
 st.markdown(
     f"""
     <style>
@@ -25,3 +25,22 @@ st.markdown(
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
+        background-attachment: fixed;
+        color: white;
+    }}
+
+    @media only screen and (max-width: 768px) {{
+        .stApp {{
+            background-size: contain;
+            background-position: top center;
+            background-attachment: scroll;
+        }}
+    }}
+
+    h1, h2, h3, h4, h5, h6, .stMetric, .stButton, .stMarkdown {{
+        color: white !important;
+    }}
+
+    .timer-box {{
+        background
+        
