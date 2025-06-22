@@ -17,7 +17,7 @@ b64 = base64.b64encode(encoded).decode()
 
 # CSS mit dunklem Overlay und responsive Design
 st.markdown(
-    f"""
+    f'''
     <style>
     .stApp {{
         background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
@@ -42,5 +42,16 @@ st.markdown(
     }}
 
     .timer-box {{
-        background
-        
+        background-color: rgba(0, 0, 0, 0.5);
+        padding: 1em;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        margin-bottom: 10px;
+    }}
+    </style>
+    ''',
+    unsafe_allow_html=True
+)
+
+# Alphabetisch sortierte Kindernamen
+kinder_namen
