@@ -1,109 +1,63 @@
 import streamlit as st
 import time
-import base64
 from streamlit_autorefresh import st_autorefresh
 
-# Auto-Refresh alle 1 Sekunde (damit sich die Timer dynamisch aktualisieren)
-st_autorefresh(interval=1000, key="timer_refresh")
+# Auto-Refresh alle 1 Sekunde, damit sich die Timer dynamisch aktualisieren
+st_autorefresh(interval=1000, key="refresh")
 
-# Layout & Titel setzen
-st.set_page_config(layout="wide")
-st.title("🕒 Kompakter 10-fach Kinder-Timer (kompakt & sichtbar)")
+# Seiteneinstellungen und Überschrift
+st.set_page_config(page_title="Kinder-Timer", layout="wide")
+st.title("Kompakter Kinder-Timer")
+st.write("Drücke 'Start', um den Timer zu starten, 'Pause' zum Anhalten und 'Reset', um den Timer zurückzusetzen.")
 
-# Hintergrundbild laden & als Base64 kodieren
-with open("ilgen_lions.png", "rb") as f:
-    encoded = f.read()
-b64 = base64.b64encode(encoded).decode()
-
-# CSS einbinden – kompakte Darstellung & Buttons immer sichtbar
-st.markdown(
-    f'''
-    <style>
-    .stApp {{
-        background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
-                          url("data:image/png;base64,{b64}");
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        background-attachment: fixed;
-        color: white;
-    }}
-    @media only screen and (max-width: 768px) {{
-        .stApp {{
-            background-size: contain;
-            background-position: top center;
-            background-attachment: scroll;
-        }}
-    }}
-    h1, h2, h3, h4, h5, h6, .stMetric, .stButton, .stMarkdown {{
-        color: white !important;
-    }}
-    .timer-box {{
-        background-color: rgba(0, 0, 0, 0.6);
-        padding: 0.5em;
-        border-radius: 5px;
-        box-shadow: 0 0 8px rgba(0,0,0,0.3);
-        margin-bottom: 5px;
-    }}
-    .stButton button {{
-         opacity: 1 !important;
-         transition: none !important;
-         padding: 0.5em 0.8em !important;
-         font-size: 0.9em !important;
-    }}
-    </style>
-    ''',
-    unsafe_allow_html=True
-)
-
-# Kindernamen alphabetisch nach Anfangsbuchstaben sortieren
-kinder_namen = sorted([
+# Liste der Kindernamen – alphabetisch nach dem Anfangsbuchstaben sortiert
+children_names = sorted([
     "Annabelle", "Charlotte", "Elena", "Ella", "Filippa",
     "Ida", "Luisa", "Meliah", "Noemi", "Uliana"
 ], key=lambda name: (name[0], name))
 
-# Timer-Initialisierung (nur einmal in der Session)
+# Timer-Initialisierung: Wir speichern jeden Timer in der Session, damit der Zustand erhalten bleibt.
 if "timers" not in st.session_state:
-    st.session_state["timers"] = [
-        {"name": name, "start_time": None, "elapsed": 0.0, "running": False}
-        for name in kinder_namen
+    st.session_state.timers = [
+        {"name": name, "elapsed": 0.0, "running": False, "start_time": None}
+        for name in children_names
     ]
 
-# Funktion, um die verstrichene Zeit im Format mm:ss anzuzeigen
+# Funktion zur Zeitformatierung (mm:ss)
 def format_time(seconds):
     minutes = int(seconds // 60)
     sec = int(seconds % 60)
     return f"{minutes:02d}:{sec:02d}"
 
-# Anzeige – 2 Reihen à 5 Timer (kompakt)
+# Anzeige der Timer in 2 Reihen à 5 Spalten
 for row in range(2):
     cols = st.columns(5)
-    for i in range(5):
+    for i, col in enumerate(cols):
         idx = row * 5 + i
-        timer = st.session_state["timers"][idx]
-        with cols[i]:
-            # Kompakte Timer-Box
-            st.markdown('<div class="timer-box">', unsafe_allow_html=True)
-            st.markdown(f"<h4>{timer['name']}</h4>", unsafe_allow_html=True)
+        timer = st.session_state.timers[idx]
+        with col:
+            # Wenn der Timer läuft, aktualisiere die verstrichene Zeit
             if timer["running"]:
                 timer["elapsed"] = time.time() - timer["start_time"]
-            st.metric(label="Zeit", value=format_time(timer["elapsed"]))
-            st.markdown("</div>", unsafe_allow_html=True)
+                
+            # Kindername und verstrichene Zeit anzeigen
+            st.header(timer["name"])
+            st.subheader(format_time(timer["elapsed"]))
             
-            # Steuerknöpfe – stets sichtbar
+            # Drei Buttons in einer Zeile
             btn_cols = st.columns(3)
             with btn_cols[0]:
-                if st.button("▶", key=f"start_{idx}"):
+                if st.button("Start", key=f"start_{idx}"):
                     if not timer["running"]:
+                        # Timer startet und berücksichtigt bereits verstrichene Zeit
                         timer["start_time"] = time.time() - timer["elapsed"]
                         timer["running"] = True
             with btn_cols[1]:
-                if st.button("⏸", key=f"pause_{idx}"):
+                if st.button("Pause", key=f"pause_{idx}"):
                     if timer["running"]:
                         timer["elapsed"] = time.time() - timer["start_time"]
                         timer["running"] = False
             with btn_cols[2]:
-                if st.button("⏹", key=f"stop_{idx}"):
-                    timer["start_time"] = None
-                    timer["elapsed"] = 0.0
+                if st.button("Reset", key=f"reset_{idx}"):
                     timer["running"] = False
+                    timer["elapsed"] = 0.0
