@@ -26,7 +26,7 @@ for row in range(2):
         with cols[i]:
             st.markdown(f"**{timer['name']}**")
             
-            c1, c2, c3 = st.colum
+            c1, c2, c3 = st.columns([1, 1, 1])
 import streamlit as st
 import time
 
