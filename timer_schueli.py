@@ -38,6 +38,72 @@ st.markdown(
     h1, h2, h3, h4, h5, h6, .stMetric, .stButton, .stMarkdown {{
         color: white !important;
     }}
-    /* Kompakte Timer-Box */
     .timer-box {{
-        background-color
+        background-color: rgba(0, 0, 0, 0.6);
+        padding: 0.5em;
+        border-radius: 5px;
+        box-shadow: 0 0 8px rgba(0,0,0,0.3);
+        margin-bottom: 5px;
+    }}
+    .stButton button {{
+         opacity: 1 !important;
+         transition: none !important;
+         padding: 0.5em 0.8em !important;
+         font-size: 0.9em !important;
+    }}
+    </style>
+    ''',
+    unsafe_allow_html=True
+)
+
+# Kindernamen alphabetisch nach Anfangsbuchstaben sortieren
+kinder_namen = sorted([
+    "Annabelle", "Charlotte", "Elena", "Ella", "Filippa",
+    "Ida", "Luisa", "Meliah", "Noemi", "Uliana"
+], key=lambda name: (name[0], name))
+
+# Timer-Initialisierung (nur einmal in der Session)
+if "timers" not in st.session_state:
+    st.session_state["timers"] = [
+        {"name": name, "start_time": None, "elapsed": 0.0, "running": False}
+        for name in kinder_namen
+    ]
+
+# Funktion, um die verstrichene Zeit im Format mm:ss anzuzeigen
+def format_time(seconds):
+    minutes = int(seconds // 60)
+    sec = int(seconds % 60)
+    return f"{minutes:02d}:{sec:02d}"
+
+# Anzeige – 2 Reihen à 5 Timer (kompakt)
+for row in range(2):
+    cols = st.columns(5)
+    for i in range(5):
+        idx = row * 5 + i
+        timer = st.session_state["timers"][idx]
+        with cols[i]:
+            # Kompakte Timer-Box
+            st.markdown('<div class="timer-box">', unsafe_allow_html=True)
+            st.markdown(f"<h4>{timer['name']}</h4>", unsafe_allow_html=True)
+            if timer["running"]:
+                timer["elapsed"] = time.time() - timer["start_time"]
+            st.metric(label="Zeit", value=format_time(timer["elapsed"]))
+            st.markdown("</div>", unsafe_allow_html=True)
+            
+            # Steuerknöpfe – stets sichtbar
+            btn_cols = st.columns(3)
+            with btn_cols[0]:
+                if st.button("▶", key=f"start_{idx}"):
+                    if not timer["running"]:
+                        timer["start_time"] = time.time() - timer["elapsed"]
+                        timer["running"] = True
+            with btn_cols[1]:
+                if st.button("⏸", key=f"pause_{idx}"):
+                    if timer["running"]:
+                        timer["elapsed"] = time.time() - timer["start_time"]
+                        timer["running"] = False
+            with btn_cols[2]:
+                if st.button("⏹", key=f"stop_{idx}"):
+                    timer["start_time"] = None
+                    timer["elapsed"] = 0.0
+                    timer["running"] = False
