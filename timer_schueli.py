@@ -37,3 +37,18 @@ for row in range(2):
                         timer["running"] = True
 
             with btn_cols[1]:
+                if st.button("⏸", key=f"pause_{idx}"):
+                    if timer["running"]:
+                        timer["elapsed"] = time.time() - timer["start_time"]
+                        timer["running"] = False
+
+            with btn_cols[2]:
+                if st.button("⏹", key=f"stop_{idx}"):
+                    timer["start_time"] = None
+                    timer["elapsed"] = 0.0
+                    timer["running"] = False
+
+            # Zeit aktualisieren, wenn aktiv
+            if timer["running"]:
+                timer["elapsed"] = time.time() - timer["start_time"]
+                st.experimental_rerun()
