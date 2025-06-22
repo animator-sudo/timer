@@ -8,14 +8,14 @@ st_autorefresh(interval=1000, key="timer_refresh")
 
 # Layout & Titel
 st.set_page_config(layout="wide")
-st.title("🕒 Kompakter 10-fach Kinder-Timer")
+st.title("🕒 Kompakter 10-fach Kinder-Timer (nach Anfangsbuchstaben gruppiert)")
 
 # Hintergrundbild einlesen & codieren
 with open("ilgen_lions.png", "rb") as f:
     encoded = f.read()
 b64 = base64.b64encode(encoded).decode()
 
-# CSS einbinden – sicheres Format mit abgeschlossenen Strings & Klammern
+# CSS einbinden
 st.markdown(
     f'''
     <style>
@@ -50,9 +50,12 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Kindernamen alphabetisch
-kinder_namen = [
+# Kindernamen nach Anfangsbuchstaben sortieren
+kinder_namen = sorted([
     "Annabelle", "Charlotte", "Elena", "Ella", "Filippa",
     "Ida", "Luisa", "Meliah", "Noemi", "Uliana"
-]
-kinder_namen.sort
+], key=lambda name: (name[0], name))
+
+# Timer-Initialisierung
+if "timers" not in st.session_state:
+    st.session_state.timers = 
