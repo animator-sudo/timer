@@ -1,6 +1,35 @@
 import streamlit as st
 import time
 
+# Initialisiere den Session State
+if "timers" not in st.session_state:
+    st.session_state.timers = [
+        {"name": f"Kind {i+1}", "start_time": None, "elapsed": 0.0, "running": False}
+        for i in range(10)
+    ]
+
+st.set_page_config(layout="wide")
+st.title("🕒 Kinder-Timer (10-fach kompakt)")
+
+def format_time(seconds):
+    minutes = int(seconds // 60)
+    sec = int(seconds % 60)
+    return f"{minutes:02d}:{sec:02d}"
+
+# 5 Timer pro Zeile (2 Zeilen)
+for row in range(2):
+    cols = st.columns(5)
+    for i in range(5):
+        idx = row * 5 + i
+        timer = st.session_state.timers[idx]
+
+        with cols[i]:
+            st.markdown(f"**{timer['name']}**")
+            
+            c1, c2, c3 = st.colum
+import streamlit as st
+import time
+
 # Initialisiere den Session State (nur beim ersten Laden)
 if "timers" not in st.session_state:
     st.session_state.timers = [
