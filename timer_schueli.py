@@ -42,7 +42,7 @@ st.markdown(
     }}
 
     .timer-box {{
-        background-color: rgba(0, 0, 0, 0.5);
+        background-color: rgba(0, 0, 0, 0.6);
         padding: 1em;
         border-radius: 10px;
         box-shadow: 0 0 10px rgba(0,0,0,0.3);
@@ -66,10 +66,12 @@ if "timers" not in st.session_state:
         for name in kinder_namen
     ]
 
-# Zeit formatieren
+# Zeit formatieren (mm:ss)
 def format_time(seconds):
     minutes = int(seconds // 60)
     sec = int(seconds % 60)
     return f"{minutes:02d}:{sec:02d}"
 
-
+# Anzeige: 2 Reihen à 5 Timer
+for row in range(2):
+    timer_cols = st.columns(5)
