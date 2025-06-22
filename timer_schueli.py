@@ -16,7 +16,7 @@ with open("ilgen_lions.png", "rb") as f:
     img_data = f.read()
 b64 = base64.b64encode(img_data).decode()
 
-# CSS einbinden: Adaptiver Hintergrund mit transparenter Überlagerung; Timer-Boxen mit weißem Rahmen und weißem Hintergrund; Button-Text schwarz
+# CSS einbinden: Adaptiver Hintergrund mit transparenter Überlagerung; Timer-Boxen mit weißem Rahmen und runden Ecken; Button-Text schwarz
 st.markdown(
     f"""
     <style>
@@ -54,11 +54,4 @@ children_names = sorted([
 ], key=lambda name: (name[0], name))
 
 # Timer-Initialisierung (nur einmal in der Session)
-if "timers" not in st.session_state:
-    st.session_state.timers = [
-        {"name": name, "elapsed": 0.0, "running": False, "start_time": None}
-        for name in children_names
-    ]
-
-# Funktion zur Zeitformatierung (mm:ss)
-def format_time
+if "timers" not in
