@@ -3,7 +3,7 @@ import time
 
 # Page Setup
 st.set_page_config(layout="wide")
-st.title("🕒 Kompakter 10-fach Kinder-Timer")
+st.title("🕒 Schüeli-Timer")
 
 # Timer-Init
 if "timers" not in st.session_state:
