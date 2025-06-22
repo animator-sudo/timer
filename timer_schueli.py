@@ -6,16 +6,16 @@ from streamlit_autorefresh import st_autorefresh
 # Auto-Refresh alle 1 Sekunde
 st_autorefresh(interval=1000, key="timer_refresh")
 
-# Layout festlegen
+# Layout & Titel
 st.set_page_config(layout="wide")
 st.title("🕒 Kompakter 10-fach Kinder-Timer")
 
-# Hintergrundbild base64-kodieren
+# Hintergrundbild einlesen und codieren
 with open("ilgen_lions.png", "rb") as f:
     encoded = f.read()
 b64 = base64.b64encode(encoded).decode()
 
-# CSS mit dunklem Overlay und responsive Design
+# CSS für Hintergrund, Overlay & Lesbarkeit
 st.markdown(
     f'''
     <style>
@@ -53,5 +53,36 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Alphabetisch sortierte Kindernamen
-kinder_namen
+# Kindernamen alphabetisch sortieren
+kinder_namen = [
+    "Annabelle", "Charlotte", "Elena", "Ella", "Filippa",
+    "Ida", "Luisa", "Meliah", "Noemi", "Uliana"
+]
+kinder_namen.sort()
+
+# Timer-Initialisierung
+if "timers" not in st.session_state:
+    st.session_state.timers = [
+        {"name": name, "start_time": None, "elapsed": 0.0, "running": False}
+        for name in kinder_namen
+    ]
+
+# Zeit formatieren
+def format_time(seconds):
+    minutes = int(seconds // 60)
+    sec = int(seconds % 60)
+    return f"{minutes:02d}:{sec:02d}"
+
+# Timer in 2 Reihen à 5 Spalten anzeigen
+for row in range(2):
+    timer_cols = st.columns(5)
+    for i in range(5):
+        idx = row * 5 + i
+        timer = st.session_state.timers[idx]
+
+        with timer_cols[i]:
+            with st.container():
+                st.markdown('<div class="timer-box">', unsafe_allow_html=True)
+                st.markdown(f"### {timer['name']}")
+
+
