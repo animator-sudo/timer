@@ -3,20 +3,19 @@ import time
 import base64
 from streamlit_autorefresh import st_autorefresh
 
-# Auto-Refresh alle 1 Sekunde, damit Timer dynamisch aktualisiert werden
+# Auto-Refresh alle 1 Sekunde
 st_autorefresh(interval=1000, key="refresh")
 
-# Seiteneinstellungen
 st.set_page_config(page_title="Ilgen Lions Timer", layout="wide")
 st.title("Ilgen Lions Timer")
 st.write("Drücke 'Start', um den Timer zu starten, 'Pause', um anzuhalten und 'Reset', um den Timer zurückzusetzen.")
 
-# Hintergrundbild laden und Base64 kodieren
+# Hintergrundbild laden
 with open("ilgen_lions.png", "rb") as f:
     img_data = f.read()
 b64 = base64.b64encode(img_data).decode()
 
-# CSS für iPad-Hochformat-Optimierung und Buttons
+# CSS: kompakter, kleinere Schriften, engeres Layout, kleinere Buttons
 st.markdown(
     f"""
     <style>
@@ -25,32 +24,56 @@ st.markdown(
         background-size: cover;
         background-position: center;
         color: white;
+        font-family: Arial, sans-serif;
     }}
     .timer-box {{
-        padding: 20px;
-        border-radius: 16px;
+        padding: 10px 12px;
+        border-radius: 12px;
         text-align: center;
-        margin-bottom: 20px;
+        margin-bottom: 4px;
         color: white;
     }}
     .stButton button {{
         background-color: #f0f0f0 !important;
         color: #000000 !important;
         font-weight: bold;
-        font-size: 20px !important;
-        padding: 14px 20px;
-        border-radius: 10px;
+        font-size: 16px !important;
+        padding: 8px 10px;
+        border-radius: 8px;
         width: 100%;
+        margin: 2px 0;
     }}
-    h1, h2, h3 {{
+    h1 {{
         font-size: 26px !important;
+        margin-bottom: 8px;
     }}
+    h2 {{
+        font-size: 18px !important;
+        margin: 2px 0 6px 0;
+    }}
+    h3 {{
+        font-size: 16px !important;
+        margin: 2px 0 6px 0;
+    }}
+    .row-container > div > div[role="listitem"] {
+        padding-bottom: 0px !important;
+        margin-bottom: 0px !important;
+    }
+    /* Reduziere den Abstand zwischen den Zeilen (Columns-Reihen) */
+    .css-1lcbmhc.e1fqkh3o3 {  /* Streamlit's class für column rows */
+        margin-bottom: 2px !important;
+    }
+    /* Rundenzeiten kleiner und kompakt */
+    .round-time {
+        font-size: 14px;
+        margin: 0 0 2px 0;
+        padding: 0;
+    }
     </style>
     """,
     unsafe_allow_html=True
 )
 
-# Kinder in gewünschter Reihenfolge auf 4 Zeilen
 children_names = [
     "Charlotte", "Filippa", "Annabelle",        # Zeile 1
     "Noemi",                                    # Zeile 2
@@ -58,7 +81,6 @@ children_names = [
     "Uliana"                                    # Zeile 4
 ]
 
-# Timer initialisieren oder ergänzen
 if "timers" not in st.session_state:
     st.session_state.timers = []
 
@@ -94,7 +116,6 @@ def get_bg_color(elapsed, running):
     else:
         return "red"
 
-# Layout mit festen 4 Zeilen
 layout = [
     ["Charlotte", "Filippa", "Annabelle"],
     ["Noemi"],
@@ -109,7 +130,6 @@ for row in layout:
     for i, name in enumerate(row):
         timer = timer_dict[name]
 
-        # Timer läuft: laufende Zeit berechnen
         if timer["running"]:
             timer["elapsed"] = time.time() - timer["start_time"]
 
@@ -120,11 +140,10 @@ for row in layout:
             st.header(timer["name"])
             st.subheader(format_time(timer["elapsed"]))
 
-            btn_cols = st.columns(3)
+            btn_cols = st.columns([1,1,1])
             with btn_cols[0]:
                 if st.button("Start", key=f"start_{name}"):
                     if not timer["running"]:
-                        # Falls Zeit > 0, nicht neu starten, sondern weiterlaufen lassen
                         timer["start_time"] = time.time() - timer["elapsed"]
                         timer["running"] = True
             with btn_cols[1]:
@@ -132,7 +151,6 @@ for row in layout:
                     if timer["running"]:
                         timer["elapsed"] = time.time() - timer["start_time"]
                         timer["running"] = False
-                        # Rundenzeit direkt speichern
                         timer["rounds"].append(timer["elapsed"])
             with btn_cols[2]:
                 if st.button("Reset", key=f"reset_{name}"):
@@ -145,4 +163,4 @@ for row in layout:
             if timer["rounds"]:
                 st.markdown("**Rundenzeiten:**")
                 for j, r in enumerate(timer["rounds"], 1):
-                    st.write(f"Runde {j}: {format_time(r)}")
+                    st.markdown(f'<p class="round-time">Runde {j}: {format_time(r)}</p>', unsafe_allow_html=True)
