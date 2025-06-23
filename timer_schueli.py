@@ -5,7 +5,46 @@ from streamlit_autorefresh import st_autorefresh
 st_autorefresh(interval=1000, key="refresh")
 
 st.set_page_config(page_title="Ilgen Lions Timer", layout="wide")
-st.title("Ilgen Lions Timer")
+
+# Mastertimer initialisieren
+if "master_start_time" not in st.session_state:
+    st.session_state.master_start_time = None
+
+# Titel mit Mastertimer nebendran
+st.markdown("""
+    <style>
+    .title-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .master-timer {
+        font-size: 28px;
+        font-weight: bold;
+        color: lightgreen;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+master_elapsed = 0.0
+if st.session_state.master_start_time:
+    master_elapsed = time.time() - st.session_state.master_start_time
+
+def format_time(seconds):
+    minutes = int(seconds // 60)
+    sec = int(seconds % 60)
+    return f"{minutes:02d}:{sec:02d}"
+
+st.markdown(
+    f"""
+    <div class="title-row">
+        <h1>Ilgen Lions Timer</h1>
+        <div class="master-timer">⏱ Master: {format_time(master_elapsed)}</div>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
 st.write("Drücke 'S' zum Starten, 'P' zum Pausieren und 'R' zum Zurücksetzen.")
 
 # CSS Styling
@@ -80,11 +119,6 @@ for row in layout:
                 "color_offset": 0.0
             })
 
-def format_time(seconds):
-    minutes = int(seconds // 60)
-    sec = int(seconds % 60)
-    return f"{minutes:02d}:{sec:02d}"
-
 def get_bg_color(elapsed, running, color_offset):
     adj = elapsed - color_offset
     if not running:
@@ -116,7 +150,7 @@ for row in layout:
         with cols[i]:
             st.markdown(f'<div class="timer-box" style="background-color: {bg_color};">', unsafe_allow_html=True)
 
-            # Name + Zeit (Zeit rechts)
+            # Name + Zeit
             time_str = format_time(timer["elapsed"])
             st.markdown(
                 f'<div class="name-time">'
@@ -141,6 +175,8 @@ for row in layout:
                                     t["start_time"] = st.session_state.group_start_time
                                     t["running"] = True
                                 st.session_state.pending_start.clear()
+                                if st.session_state.master_start_time is None:
+                                    st.session_state.master_start_time = st.session_state.group_start_time
                         else:
                             timer["start_time"] = time.time() - timer["elapsed"]
                             timer["running"] = True
