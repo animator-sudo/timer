@@ -27,30 +27,27 @@ st.markdown("""
         background-color: #f0f0f0 !important;
         color: #000000 !important;
         font-weight: bold;
-        font-size: 20px !important;
+        font-size: 18px !important;
         padding: 6px 8px;
         border-radius: 8px;
         width: 100%;
         margin: 2px 0;
-        min-width: 40px;
-        height: 40px;
+        min-width: 36px;
+        height: 36px;
     }
-    h1 {
-        font-size: 26px !important;
-        margin-bottom: 8px;
+    .name-time {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 18px;
+        margin-bottom: 6px;
     }
-    h2 {
-        font-size: 18px !important;
-        margin: 2px 0 6px 0;
-    }
-    h3 {
-        font-size: 16px !important;
-        margin: 2px 0 6px 0;
-    }
-    .round-time {
+    .rounds {
         font-size: 14px;
-        margin: 0 0 2px 0;
-        padding: 0;
+        margin-top: 6px;
+    }
+    .rounds span {
+        margin-right: 6px;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -66,10 +63,10 @@ layout = [
 # Session-Initialisierung
 if "timers" not in st.session_state:
     st.session_state.timers = []
-    st.session_state.pending_start = set()  # Namen mit gedrücktem Start
+    st.session_state.pending_start = set()
     st.session_state.group_start_time = None
 
-# Timer-Daten initialisieren (falls nicht vorhanden)
+# Timer-Daten initialisieren
 existing_names = {t["name"] for t in st.session_state.timers}
 for row in layout:
     for name in row:
@@ -83,7 +80,6 @@ for row in layout:
                 "color_offset": 0.0
             })
 
-# Hilfsfunktionen
 def format_time(seconds):
     minutes = int(seconds // 60)
     sec = int(seconds % 60)
@@ -104,16 +100,13 @@ def get_bg_color(elapsed, running, color_offset):
     else:
         return "white"
 
-# Zugriff über Namen
 timer_dict = {t["name"]: t for t in st.session_state.timers}
 
-# Anzeige
 for row in layout:
     cols = st.columns(len(row))
     for i, name in enumerate(row):
         timer = timer_dict[name]
 
-        # Laufzeit aktualisieren, wenn aktiv
         if timer["running"]:
             timer["elapsed"] = time.time() - timer["start_time"]
 
@@ -122,15 +115,20 @@ for row in layout:
 
         with cols[i]:
             st.markdown(f'<div class="timer-box" style="background-color: {bg_color};">', unsafe_allow_html=True)
-            st.markdown(f'<h2 style="color: {name_color}; margin-bottom: 0.3rem;">{timer["name"]}</h2>', unsafe_allow_html=True)
-            st.subheader(format_time(timer["elapsed"]))
 
-            btn_cols = st.columns([1,1,1])
+            # Name + Zeit in einer Zeile
+            time_str = format_time(timer["elapsed"])
+            st.markdown(
+                f'<div class="name-time"><span style="color: {name_color}; font-weight: bold;">{name}</span>'
+                f'<span>{time_str}</span></div>',
+                unsafe_allow_html=True
+            )
+
+            btn_cols = st.columns([1, 1, 1])
             with btn_cols[0]:
                 if st.button("S", key=f"start_{name}"):
                     if not timer["running"] and name not in st.session_state.pending_start:
                         st.session_state.pending_start.add(name)
-                        # Wenn genau 6 Kinder Start gedrückt haben, starte alle gleichzeitig
                         if len(st.session_state.pending_start) == 6:
                             st.session_state.group_start_time = time.time()
                             for n in st.session_state.pending_start:
@@ -152,9 +150,11 @@ for row in layout:
                     timer["rounds"] = []
                     timer["color_offset"] = 0.0
 
-            st.markdown("</div>", unsafe_allow_html=True)
-
+            # Rundenzeiten als R1: mm:ss etc.
             if timer["rounds"]:
-                st.markdown("**Rundenzeiten:**")
+                st.markdown('<div class="rounds">', unsafe_allow_html=True)
                 for j, r in enumerate(timer["rounds"], 1):
-                    st.markdown(f'<p class="round-time">Runde {j}: {format_time(r)}</p>', unsafe_allow_html=True)
+                    st.markdown(f'<span>R{j}: {format_time(r)}</span>', unsafe_allow_html=True)
+                st.markdown('</div>', unsafe_allow_html=True)
+
+            st.markdown("</div>", unsafe_allow_html=True)
