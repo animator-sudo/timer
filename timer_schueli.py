@@ -1,6 +1,5 @@
 import streamlit as st
 import time
-import base64
 from streamlit_autorefresh import st_autorefresh
 
 # Auto-Refresh alle 1 Sekunde
@@ -10,30 +9,23 @@ st.set_page_config(page_title="Ilgen Lions Timer", layout="wide")
 st.title("Ilgen Lions Timer")
 st.write("Drücke 'S' zum Starten, 'P' zum Pausieren und 'R' zum Zurücksetzen.")
 
-# Hintergrundbild laden
-with open("ilgen_lions.png", "rb") as f:
-    img_data = f.read()
-b64 = base64.b64encode(img_data).decode()
-
-# CSS: kompakter, kleinere Schriften, engeres Layout, kleinere Buttons
+# CSS: Grauer Hintergrund, kompakter, kleinere Schriften, Buttons S, P, R
 st.markdown(
-    f"""
+    """
     <style>
-    .stApp {{
-        background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url("data:image/png;base64,{b64}");
-        background-size: cover;
-        background-position: center;
+    .stApp {
+        background-color: #888888;
         color: white;
         font-family: Arial, sans-serif;
-    }}
-    .timer-box {{
+    }
+    .timer-box {
         padding: 10px 12px;
         border-radius: 12px;
         text-align: center;
         margin-bottom: 4px;
         color: white;
-    }}
-    .stButton button {{
+    }
+    .stButton button {
         background-color: #f0f0f0 !important;
         color: #000000 !important;
         font-weight: bold;
@@ -44,33 +36,31 @@ st.markdown(
         margin: 2px 0;
         min-width: 40px;
         height: 40px;
-    }}
-    h1 {{
+    }
+    h1 {
         font-size: 26px !important;
         margin-bottom: 8px;
-    }}
-    h2 {{
+    }
+    h2 {
         font-size: 18px !important;
         margin: 2px 0 6px 0;
-    }}
-    h3 {{
+    }
+    h3 {
         font-size: 16px !important;
         margin: 2px 0 6px 0;
-    }}
-    .row-container > div > div[role="listitem"] {{
+    }
+    .row-container > div > div[role="listitem"] {
         padding-bottom: 0px !important;
         margin-bottom: 0px !important;
-    }}
-    /* Reduziere den Abstand zwischen den Zeilen (Columns-Reihen) */
-    .css-1lcbmhc.e1fqkh3o3 {{  /* Streamlit's class für column rows */
+    }
+    .css-1lcbmhc.e1fqkh3o3 {
         margin-bottom: 2px !important;
-    }}
-    /* Rundenzeiten kleiner und kompakt */
-    .round-time {{
+    }
+    .round-time {
         font-size: 14px;
         margin: 0 0 2px 0;
         padding: 0;
-    }}
+    }
     </style>
     """,
     unsafe_allow_html=True
