@@ -4,7 +4,7 @@ import base64
 from streamlit_autorefresh import st_autorefresh
 
 # Auto-Refresh alle 1 Sekunde
-st_autorefresh(interval=10000, key="refresh")
+st_autorefresh(interval=100, key="refresh")
 
 st.set_page_config(page_title="Ilgen Lions Timer", layout="wide")
 st.title("Ilgen Lions Timer")
