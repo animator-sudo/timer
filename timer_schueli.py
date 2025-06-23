@@ -91,29 +91,35 @@ for name in children_names:
     if name not in name_set:
         st.session_state.timers.append({
             "name": name,
-            "elapsed": 0.0,
+            "elapsed": 0.0,          # Gesamt gelaufene Zeit (für Anzeige)
             "running": False,
             "start_time": None,
-            "rounds": []
+            "rounds": [],
+            "color_offset": 0.0      # Zeit-Offset für Farb-Reset bei Pause
         })
     else:
         for t in st.session_state.timers:
-            if t["name"] == name and "rounds" not in t:
-                t["rounds"] = []
+            if t["name"] == name:
+                if "rounds" not in t:
+                    t["rounds"] = []
+                if "color_offset" not in t:
+                    t["color_offset"] = 0.0
 
 def format_time(seconds):
     minutes = int(seconds // 60)
     sec = int(seconds % 60)
     return f"{minutes:02d}:{sec:02d}"
 
-def get_bg_color(elapsed, running):
+def get_bg_color(elapsed, running, color_offset):
+    # Farb-Balken startet immer bei (elapsed - color_offset)
+    adj_time = elapsed - color_offset
     if not running:
         return "white"
-    if elapsed < 60:
+    if adj_time < 60:
         return "white"
-    elif elapsed < 120:
+    elif adj_time < 120:
         return "yellow"
-    elif elapsed < 180:
+    elif adj_time < 180:
         return "orange"
     else:
         return "red"
@@ -135,7 +141,7 @@ for row in layout:
         if timer["running"]:
             timer["elapsed"] = time.time() - timer["start_time"]
 
-        bg_color = get_bg_color(timer["elapsed"], timer["running"])
+        bg_color = get_bg_color(timer["elapsed"], timer["running"], timer["color_offset"])
 
         with cols[i]:
             st.markdown(f'<div class="timer-box" style="background-color: {bg_color};">', unsafe_allow_html=True)
@@ -154,11 +160,14 @@ for row in layout:
                         timer["elapsed"] = time.time() - timer["start_time"]
                         timer["running"] = False
                         timer["rounds"].append(timer["elapsed"])
+                        # Farb-Offset setzen, damit Farbe wieder bei weiß beginnt
+                        timer["color_offset"] = timer["elapsed"]
             with btn_cols[2]:
                 if st.button("R", key=f"reset_{name}"):
                     timer["running"] = False
                     timer["elapsed"] = 0.0
                     timer["rounds"] = []
+                    timer["color_offset"] = 0.0
 
             st.markdown("</div>", unsafe_allow_html=True)
 
