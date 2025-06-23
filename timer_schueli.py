@@ -5,9 +5,25 @@ from streamlit_autorefresh import st_autorefresh
 st_autorefresh(interval=1000, key="refresh")
 st.set_page_config(page_title="Ilgen Lions Timer", layout="wide")
 
-# Mastertimer initialisieren
+# *** Sicherstellen, dass alle session_state Variablen initialisiert sind ***
+if "pending_start" not in st.session_state:
+    st.session_state.pending_start = set()
+if "timers" not in st.session_state:
+    st.session_state.timers = []
+if "group_start_time" not in st.session_state:
+    st.session_state.group_start_time = None
 if "master_start_time" not in st.session_state:
     st.session_state.master_start_time = None
+
+# Mastertimer berechnen
+master_elapsed = 0.0
+if st.session_state.master_start_time:
+    master_elapsed = time.time() - st.session_state.master_start_time
+
+def format_time(seconds):
+    minutes = int(seconds // 60)
+    sec = int(seconds % 60)
+    return f"{minutes:02d}:{sec:02d}"
 
 # Titelzeile mit Mastertimer
 st.markdown("""
@@ -25,15 +41,6 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-master_elapsed = 0.0
-if st.session_state.master_start_time:
-    master_elapsed = time.time() - st.session_state.master_start_time
-
-def format_time(seconds):
-    minutes = int(seconds // 60)
-    sec = int(seconds % 60)
-    return f"{minutes:02d}:{sec:02d}"
-
 st.markdown(
     f"""
     <div class="title-row">
@@ -44,7 +51,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.write("Sobald 6 Kinder gestartet, starteten die Timer")
+st.write("Sobald 6 Kinder gestartet, starten die Timer")
 
 # CSS Styling
 st.markdown("""
@@ -98,13 +105,7 @@ layout = [
     ["Uliana"]
 ]
 
-# Session-Initialisierung
-if "timers" not in st.session_state:
-    st.session_state.timers = []
-    st.session_state.pending_start = set()
-    st.session_state.group_start_time = None
-
-# Timer-Daten initialisieren
+# Timer-Daten initialisieren, falls noch nicht vorhanden
 existing_names = {t["name"] for t in st.session_state.timers}
 for row in layout:
     for name in row:
@@ -118,17 +119,18 @@ for row in layout:
             })
 
 def get_bg_color(elapsed):
-    if elapsed < 180:
+    # Farben jeweils 60s früher als vorher
+    if elapsed < 120:       # bis 2:00
         return "white"
-    elif elapsed < 300:
+    elif elapsed < 240:     # bis 4:00
         return "green"
-    elif elapsed < 420:
+    elif elapsed < 360:     # bis 6:00
         return "yellow"
-    elif elapsed < 540:
+    elif elapsed < 480:     # bis 8:00
         return "orange"
-    elif elapsed < 660:
+    elif elapsed < 600:     # bis 10:00
         return "violet"
-    elif elapsed < 1080:
+    elif elapsed < 960:     # bis 16:00
         return "red"
     else:
         return "black"
@@ -144,12 +146,12 @@ for row in layout:
             timer["elapsed"] = time.time() - timer["start_time"]
 
         bg_color = get_bg_color(timer["elapsed"])
-        name_color = "limegreen" if timer["running"] else "white"
+        name_color = bg_color if bg_color != "white" else "limegreen"
 
         with cols[i]:
             st.markdown(f'<div class="timer-box" style="background-color: {bg_color};">', unsafe_allow_html=True)
 
-            # Name + Zeit
+            # Name + Zeit (wie gewünscht: Name farblich wie Balken, Zeit rechts)
             time_str = format_time(timer["elapsed"])
             st.markdown(
                 f'<div class="name-time">'
