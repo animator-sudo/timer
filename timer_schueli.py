@@ -8,7 +8,7 @@ st_autorefresh(interval=1000, key="refresh")
 
 st.set_page_config(page_title="Ilgen Lions Timer", layout="wide")
 st.title("Ilgen Lions Timer")
-st.write("Drücke 'Start', um den Timer zu starten, 'Pause', um anzuhalten und 'Reset', um den Timer zurückzusetzen.")
+st.write("Drücke 'S' zum Starten, 'P' zum Pausieren und 'R' zum Zurücksetzen.")
 
 # Hintergrundbild laden
 with open("ilgen_lions.png", "rb") as f:
@@ -37,11 +37,13 @@ st.markdown(
         background-color: #f0f0f0 !important;
         color: #000000 !important;
         font-weight: bold;
-        font-size: 16px !important;
-        padding: 8px 10px;
+        font-size: 20px !important;
+        padding: 6px 8px;
         border-radius: 8px;
         width: 100%;
         margin: 2px 0;
+        min-width: 40px;
+        height: 40px;
     }}
     h1 {{
         font-size: 26px !important;
@@ -142,18 +144,18 @@ for row in layout:
 
             btn_cols = st.columns([1,1,1])
             with btn_cols[0]:
-                if st.button("Start", key=f"start_{name}"):
+                if st.button("S", key=f"start_{name}"):
                     if not timer["running"]:
                         timer["start_time"] = time.time() - timer["elapsed"]
                         timer["running"] = True
             with btn_cols[1]:
-                if st.button("Pause", key=f"pause_{name}"):
+                if st.button("P", key=f"pause_{name}"):
                     if timer["running"]:
                         timer["elapsed"] = time.time() - timer["start_time"]
                         timer["running"] = False
                         timer["rounds"].append(timer["elapsed"])
             with btn_cols[2]:
-                if st.button("Reset", key=f"reset_{name}"):
+                if st.button("R", key=f"reset_{name}"):
                     timer["running"] = False
                     timer["elapsed"] = 0.0
                     timer["rounds"] = []
