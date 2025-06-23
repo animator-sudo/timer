@@ -78,8 +78,8 @@ st.markdown(
 
 children_names = [
     "Charlotte", "Filippa", "Annabelle",        # Zeile 1
-    "Noemi",                                    # Zeile 2
-    "Luisa", "Elena", "Ella", "Ida", "Meliah",  # Zeile 3
+    "Noemi", "Ida", "Meliah",                   # Zeile 2
+    "Luisa", "Elena","Ella",                    # Zeile 3
     "Uliana"                                    # Zeile 4
 ]
 
