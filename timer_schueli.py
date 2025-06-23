@@ -91,11 +91,11 @@ for name in children_names:
     if name not in name_set:
         st.session_state.timers.append({
             "name": name,
-            "elapsed": 0.0,          # Gesamt gelaufene Zeit (für Anzeige)
+            "elapsed": 0.0,
             "running": False,
             "start_time": None,
             "rounds": [],
-            "color_offset": 0.0      # Zeit-Offset für Farb-Reset bei Pause
+            "color_offset": 0.0
         })
     else:
         for t in st.session_state.timers:
@@ -143,8 +143,9 @@ for row in layout:
         bg_color = get_bg_color(timer["elapsed"], timer["running"], timer["color_offset"])
 
         with cols[i]:
+            color_name = "limegreen" if timer["running"] else "white"
             st.markdown(f'<div class="timer-box" style="background-color: {bg_color};">', unsafe_allow_html=True)
-            st.header(timer["name"])
+            st.markdown(f'<h2 style="color: {color_name}; margin-bottom: 0.3rem;">{timer["name"]}</h2>', unsafe_allow_html=True)
             st.subheader(format_time(timer["elapsed"]))
 
             btn_cols = st.columns([1,1,1])
