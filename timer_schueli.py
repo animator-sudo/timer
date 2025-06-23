@@ -1,10 +1,6 @@
 import streamlit as st
 import time
 import base64
-from streamlit_autorefresh import st_autorefresh
-
-# Auto-Refresh alle 1 Sekunde
-st_autorefresh(interval=1000, key="refresh")
 
 # Seiteneinstellungen
 st.set_page_config(page_title="Ilgen Lions Timer", layout="wide")
@@ -77,7 +73,6 @@ for name in children_names:
             if t["name"] == name and "rounds" not in t:
                 t["rounds"] = []
 
-# Helferfunktionen
 def format_time(seconds):
     minutes = int(seconds // 60)
     sec = int(seconds % 60)
@@ -95,7 +90,6 @@ def get_bg_color(elapsed, running):
     else:
         return "red"
 
-# Layout-Struktur in Zeilen
 layout = [
     ["Charlotte", "Filippa", "Annabelle"],
     ["Noemi"],
@@ -103,16 +97,14 @@ layout = [
     ["Uliana"]
 ]
 
-# Timer-Zugriff per Name
 timer_dict = {t["name"]: t for t in st.session_state.timers}
 
-# Darstellung der Timer
 for row in layout:
     cols = st.columns(len(row))
     for i, name in enumerate(row):
         timer = timer_dict[name]
 
-        # Laufzeit aktualisieren
+        # Wenn Timer läuft, berechne verstrichene Zeit lokal hier (kein Refresh!)
         if timer["running"]:
             timer["elapsed"] = time.time() - timer["start_time"]
 
@@ -123,13 +115,11 @@ for row in layout:
             st.header(timer["name"])
             st.subheader(format_time(timer["elapsed"]))
 
-            # Steuerungsknöpfe
             btn_cols = st.columns(3)
             with btn_cols[0]:
                 if st.button("Start", key=f"start_{name}"):
                     if not timer["running"]:
-                        if timer["elapsed"] > 0:
-                            timer["rounds"].append(timer["elapsed"])
+                        # Weiterzählen
                         timer["start_time"] = time.time() - timer["elapsed"]
                         timer["running"] = True
             with btn_cols[1]:
@@ -137,6 +127,8 @@ for row in layout:
                     if timer["running"]:
                         timer["elapsed"] = time.time() - timer["start_time"]
                         timer["running"] = False
+                        # Rundenzeit sofort speichern
+                        timer["rounds"].append(timer["elapsed"])
             with btn_cols[2]:
                 if st.button("Reset", key=f"reset_{name}"):
                     timer["running"] = False
@@ -145,7 +137,6 @@ for row in layout:
 
             st.markdown("</div>", unsafe_allow_html=True)
 
-            # Rundenzeiten anzeigen
             if timer["rounds"]:
                 st.markdown("**Rundenzeiten:**")
                 for j, r in enumerate(timer["rounds"], 1):
