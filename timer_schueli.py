@@ -11,12 +11,12 @@ st.set_page_config(page_title="Ilgen Lions Timer", layout="wide")
 st.title("Ilgen Lions Timer")
 st.write("Drücke 'Start', um den Timer zu starten, 'Pause', um anzuhalten und 'Reset', um den Timer zurückzusetzen.")
 
-# Hintergrundbild einbinden
+# Hintergrundbild laden
 with open("ilgen_lions.png", "rb") as f:
     img_data = f.read()
 b64 = base64.b64encode(img_data).decode()
 
-# CSS Styling für iPad-optimierte Darstellung
+# CSS für iPad-Hochformat-Optimierung
 st.markdown(
     f"""
     <style>
@@ -27,35 +27,38 @@ st.markdown(
         color: white;
     }}
     .timer-box {{
-        padding: 16px;
-        border-radius: 12px;
+        padding: 20px;
+        border-radius: 16px;
         text-align: center;
-        margin-bottom: 16px;
+        margin-bottom: 20px;
         color: white;
     }}
     .stButton button {{
         background-color: #f0f0f0 !important;
         color: #000000 !important;
         font-weight: bold;
-        padding: 0.75em 1em;
-        border-radius: 8px;
-        font-size: 16px;
+        font-size: 20px !important;
+        padding: 14px 20px;
+        border-radius: 10px;
         width: 100%;
+    }}
+    h1, h2, h3 {{
+        font-size: 26px !important;
     }}
     </style>
     """,
     unsafe_allow_html=True
 )
 
-# Kinder in gewünschter Reihenfolge
+# Kinder in gewünschter Reihenfolge auf 4 Zeilen
 children_names = [
-    "Charlotte", "Filippa", "Annabelle",   # Reihe 1
-    "Noemi",                               # Reihe 2
-    "Luisa", "Elena", "Ella", "Ida", "Meliah",  # Reihe 3
-    "Uliana"                               # Reihe 4
+    "Charlotte", "Filippa", "Annabelle",        # Zeile 1
+    "Noemi",                                    # Zeile 2
+    "Luisa", "Elena", "Ella", "Ida", "Meliah",  # Zeile 3
+    "Uliana"                                    # Zeile 4
 ]
 
-# Initialisierung oder Ergänzung der Timer-Struktur
+# Timer initialisieren oder ergänzen
 if "timers" not in st.session_state:
     st.session_state.timers = []
 
@@ -92,18 +95,18 @@ def get_bg_color(elapsed, running):
     else:
         return "red"
 
-# Layoutstruktur
+# Layout-Struktur in Zeilen
 layout = [
-    ["Charlotte", "Filippa", "Annabelle"],       # Reihe 1
-    ["Noemi"],                                   # Reihe 2
-    ["Luisa", "Elena", "Ella", "Ida", "Meliah"], # Reihe 3
-    ["Uliana"]                                   # Reihe 4
+    ["Charlotte", "Filippa", "Annabelle"],
+    ["Noemi"],
+    ["Luisa", "Elena", "Ella", "Ida", "Meliah"],
+    ["Uliana"]
 ]
 
 # Timer-Zugriff per Name
 timer_dict = {t["name"]: t for t in st.session_state.timers}
 
-# Timer-Darstellung
+# Darstellung der Timer
 for row in layout:
     cols = st.columns(len(row))
     for i, name in enumerate(row):
@@ -127,7 +130,7 @@ for row in layout:
                     if not timer["running"]:
                         if timer["elapsed"] > 0:
                             timer["rounds"].append(timer["elapsed"])
-                        timer["start_time"] = time.time()
+                        timer["start_time"] = time.time() - timer["elapsed"]
                         timer["running"] = True
             with btn_cols[1]:
                 if st.button("Pause", key=f"pause_{name}"):
@@ -147,4 +150,3 @@ for row in layout:
                 st.markdown("**Rundenzeiten:**")
                 for j, r in enumerate(timer["rounds"], 1):
                     st.write(f"Runde {j}: {format_time(r)}")
-
