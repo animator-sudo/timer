@@ -2,16 +2,14 @@ import streamlit as st
 import time
 from streamlit_autorefresh import st_autorefresh
 
-# Auto-Refresh alle 1 Sekunde
 st_autorefresh(interval=1000, key="refresh")
 
 st.set_page_config(page_title="Ilgen Lions Timer", layout="wide")
 st.title("Ilgen Lions Timer")
 st.write("Drücke 'S' zum Starten, 'P' zum Pausieren und 'R' zum Zurücksetzen.")
 
-# CSS: Grauer Hintergrund + kompakte Darstellung
-st.markdown(
-    """
+# CSS Styling
+st.markdown("""
     <style>
     .stApp {
         background-color: #888888;
@@ -55,11 +53,9 @@ st.markdown(
         padding: 0;
     }
     </style>
-    """,
-    unsafe_allow_html=True
-)
+    """, unsafe_allow_html=True)
 
-# Kind-Layout: 4 Zeilen
+# Layout der Kinder (Zeilen)
 layout = [
     ["Charlotte", "Filippa", "Annabelle"],
     ["Noemi", "Ida", "Meliah"],
@@ -67,13 +63,13 @@ layout = [
     ["Uliana"]
 ]
 
-# Initialisierung
+# Session-Initialisierung
 if "timers" not in st.session_state:
     st.session_state.timers = []
-    st.session_state.start_trigger_count = 0
+    st.session_state.pending_start = set()  # Namen mit gedrücktem Start
     st.session_state.group_start_time = None
 
-# Timer-Speicherung vorbereiten
+# Timer-Daten initialisieren (falls nicht vorhanden)
 existing_names = {t["name"] for t in st.session_state.timers}
 for row in layout:
     for name in row:
@@ -108,15 +104,16 @@ def get_bg_color(elapsed, running, color_offset):
     else:
         return "white"
 
-# Umwandlung zu Dictionary
+# Zugriff über Namen
 timer_dict = {t["name"]: t for t in st.session_state.timers}
 
-# Timeranzeige nach Layout
+# Anzeige
 for row in layout:
     cols = st.columns(len(row))
     for i, name in enumerate(row):
         timer = timer_dict[name]
 
+        # Laufzeit aktualisieren, wenn aktiv
         if timer["running"]:
             timer["elapsed"] = time.time() - timer["start_time"]
 
@@ -131,16 +128,16 @@ for row in layout:
             btn_cols = st.columns([1,1,1])
             with btn_cols[0]:
                 if st.button("S", key=f"start_{name}"):
-                    if not timer["running"]:
-                        st.session_state.start_trigger_count += 1
-                        if st.session_state.group_start_time is None and st.session_state.start_trigger_count >= 6:
+                    if not timer["running"] and name not in st.session_state.pending_start:
+                        st.session_state.pending_start.add(name)
+                        # Wenn genau 6 Kinder Start gedrückt haben, starte alle gleichzeitig
+                        if len(st.session_state.pending_start) == 6:
                             st.session_state.group_start_time = time.time()
-                            for t in st.session_state.timers:
+                            for n in st.session_state.pending_start:
+                                t = timer_dict[n]
                                 t["start_time"] = st.session_state.group_start_time
                                 t["running"] = True
-                        elif st.session_state.group_start_time is not None:
-                            timer["start_time"] = time.time()
-                            timer["running"] = True
+                            st.session_state.pending_start.clear()
             with btn_cols[1]:
                 if st.button("P", key=f"pause_{name}"):
                     if timer["running"]:
