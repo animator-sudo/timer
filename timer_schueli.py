@@ -55,20 +55,20 @@ st.markdown(
         font-size: 16px !important;
         margin: 2px 0 6px 0;
     }}
-    .row-container > div > div[role="listitem"] {
+    .row-container > div > div[role="listitem"] {{
         padding-bottom: 0px !important;
         margin-bottom: 0px !important;
-    }
+    }}
     /* Reduziere den Abstand zwischen den Zeilen (Columns-Reihen) */
-    .css-1lcbmhc.e1fqkh3o3 {  /* Streamlit's class für column rows */
+    .css-1lcbmhc.e1fqkh3o3 {{  /* Streamlit's class für column rows */
         margin-bottom: 2px !important;
-    }
+    }}
     /* Rundenzeiten kleiner und kompakt */
-    .round-time {
+    .round-time {{
         font-size: 14px;
         margin: 0 0 2px 0;
         padding: 0;
-    }
+    }}
     </style>
     """,
     unsafe_allow_html=True
