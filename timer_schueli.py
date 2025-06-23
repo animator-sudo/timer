@@ -55,18 +55,24 @@ children_names = [
     "Uliana"                               # Reihe 4
 ]
 
-# Timer-Initialisierung
+# Initialisierung oder Ergänzung der Timer-Struktur
 if "timers" not in st.session_state:
-    st.session_state.timers = [
-        {
+    st.session_state.timers = []
+
+name_set = set(t["name"] for t in st.session_state.timers)
+for name in children_names:
+    if name not in name_set:
+        st.session_state.timers.append({
             "name": name,
             "elapsed": 0.0,
             "running": False,
             "start_time": None,
             "rounds": []
-        }
-        for name in children_names
-    ]
+        })
+    else:
+        for t in st.session_state.timers:
+            if t["name"] == name and "rounds" not in t:
+                t["rounds"] = []
 
 # Helferfunktionen
 def format_time(seconds):
@@ -86,7 +92,7 @@ def get_bg_color(elapsed, running):
     else:
         return "red"
 
-# Layoutstruktur: Reihenweise Darstellung
+# Layoutstruktur
 layout = [
     ["Charlotte", "Filippa", "Annabelle"],       # Reihe 1
     ["Noemi"],                                   # Reihe 2
@@ -94,16 +100,16 @@ layout = [
     ["Uliana"]                                   # Reihe 4
 ]
 
-# Zugriff per Name
+# Timer-Zugriff per Name
 timer_dict = {t["name"]: t for t in st.session_state.timers}
 
-# Darstellung der Timer
+# Timer-Darstellung
 for row in layout:
     cols = st.columns(len(row))
     for i, name in enumerate(row):
         timer = timer_dict[name]
 
-        # Zeit aktualisieren
+        # Laufzeit aktualisieren
         if timer["running"]:
             timer["elapsed"] = time.time() - timer["start_time"]
 
@@ -141,3 +147,4 @@ for row in layout:
                 st.markdown("**Rundenzeiten:**")
                 for j, r in enumerate(timer["rounds"], 1):
                     st.write(f"Runde {j}: {format_time(r)}")
+
