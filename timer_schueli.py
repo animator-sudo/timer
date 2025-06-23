@@ -120,13 +120,13 @@ for row in layout:
 def get_bg_color(elapsed):
     if elapsed < 180:
         return "white"
-    elif elapsed < 360:
+    elif elapsed < 300:
         return "green"
-    elif elapsed < 540:
+    elif elapsed < 420:
         return "yellow"
-    elif elapsed < 720:
+    elif elapsed < 540:
         return "orange"
-    elif elapsed < 900:
+    elif elapsed < 660:
         return "violet"
     elif elapsed < 1080:
         return "red"
