@@ -3,14 +3,13 @@ import time
 from streamlit_autorefresh import st_autorefresh
 
 st_autorefresh(interval=1000, key="refresh")
-
 st.set_page_config(page_title="Ilgen Lions Timer", layout="wide")
 
 # Mastertimer initialisieren
 if "master_start_time" not in st.session_state:
     st.session_state.master_start_time = None
 
-# Titel mit Mastertimer nebendran
+# Titelzeile mit Mastertimer
 st.markdown("""
     <style>
     .title-row {
@@ -39,13 +38,13 @@ st.markdown(
     f"""
     <div class="title-row">
         <h1>Ilgen Lions Timer</h1>
-        <div class="master-timer">⏱ Spielzeit: {format_time(master_elapsed)}</div>
+        <div class="master-timer">⏱ Master: {format_time(master_elapsed)}</div>
     </div>
     """,
     unsafe_allow_html=True
 )
 
-st.write("Sobald 6 Kinder angewählt sind, starten die Timer")
+st.write("Drücke 'S' zum Starten, 'P' zum Pausieren und 'R' zum Zurücksetzen.")
 
 # CSS Styling
 st.markdown("""
@@ -115,24 +114,24 @@ for row in layout:
                 "elapsed": 0.0,
                 "running": False,
                 "start_time": None,
-                "rounds": [],
-                "color_offset": 0.0
+                "rounds": []
             })
 
-def get_bg_color(elapsed, running, color_offset):
-    adj = elapsed - color_offset
-    if not running:
+def get_bg_color(elapsed):
+    if elapsed < 180:
         return "white"
-    if adj >= 300:
-        return "violet"
-    elif adj >= 180:
-        return "red"
-    elif adj >= 120:
-        return "orange"
-    elif adj >= 60:
+    elif elapsed < 360:
+        return "green"
+    elif elapsed < 540:
         return "yellow"
+    elif elapsed < 720:
+        return "orange"
+    elif elapsed < 900:
+        return "violet"
+    elif elapsed < 1080:
+        return "red"
     else:
-        return "white"
+        return "black"
 
 timer_dict = {t["name"]: t for t in st.session_state.timers}
 
@@ -144,7 +143,7 @@ for row in layout:
         if timer["running"]:
             timer["elapsed"] = time.time() - timer["start_time"]
 
-        bg_color = get_bg_color(timer["elapsed"], timer["running"], timer["color_offset"])
+        bg_color = get_bg_color(timer["elapsed"])
         name_color = "limegreen" if timer["running"] else "white"
 
         with cols[i]:
@@ -187,17 +186,15 @@ for row in layout:
                         timer["elapsed"] = time.time() - timer["start_time"]
                         timer["running"] = False
                         timer["rounds"].append(timer["elapsed"])
-                        timer["color_offset"] = timer["elapsed"]
 
             with btn_cols[2]:
                 if st.button("R", key=f"reset_{name}"):
                     timer["running"] = False
                     timer["elapsed"] = 0.0
                     timer["rounds"] = []
-                    timer["color_offset"] = 0.0
                     timer["start_time"] = None
 
-            # Rundenzeiten unterhalb Buttons
+            # Rundenzeiten unterhalb der Buttons
             if timer["rounds"]:
                 st.markdown('<div class="rounds">', unsafe_allow_html=True)
                 for j, r in enumerate(timer["rounds"], 1):
