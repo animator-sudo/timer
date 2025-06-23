@@ -44,7 +44,7 @@ st.markdown("""
     }
     .rounds {
         font-size: 14px;
-        margin-top: 6px;
+        margin-bottom: 6px;
     }
     .rounds span {
         margin-right: 6px;
@@ -116,26 +116,41 @@ for row in layout:
         with cols[i]:
             st.markdown(f'<div class="timer-box" style="background-color: {bg_color};">', unsafe_allow_html=True)
 
-            # Name + Zeit in einer Zeile
+            # Name + Zeit in einer Zeile (Zeit links)
             time_str = format_time(timer["elapsed"])
             st.markdown(
-                f'<div class="name-time"><span style="color: {name_color}; font-weight: bold;">{name}</span>'
-                f'<span>{time_str}</span></div>',
+                f'<div class="name-time"><span>{time_str}</span>'
+                f'<span style="color: {name_color}; font-weight: bold;">{name}</span></div>',
                 unsafe_allow_html=True
             )
 
+            # Rundenzeiten (oberhalb Buttons)
+            if timer["rounds"]:
+                st.markdown('<div class="rounds">', unsafe_allow_html=True)
+                for j, r in enumerate(timer["rounds"], 1):
+                    st.markdown(f'<span>R{j}: {format_time(r)}</span>', unsafe_allow_html=True)
+                st.markdown('</div>', unsafe_allow_html=True)
+
+            # Buttons
             btn_cols = st.columns([1, 1, 1])
             with btn_cols[0]:
                 if st.button("S", key=f"start_{name}"):
-                    if not timer["running"] and name not in st.session_state.pending_start:
-                        st.session_state.pending_start.add(name)
-                        if len(st.session_state.pending_start) == 6:
-                            st.session_state.group_start_time = time.time()
-                            for n in st.session_state.pending_start:
-                                t = timer_dict[n]
-                                t["start_time"] = st.session_state.group_start_time
-                                t["running"] = True
-                            st.session_state.pending_start.clear()
+                    if not timer["running"]:
+                        if name in st.session_state.pending_start:
+                            st.session_state.pending_start.remove(name)
+                        if st.session_state.group_start_time is None:
+                            st.session_state.pending_start.add(name)
+                            if len(st.session_state.pending_start) == 6:
+                                st.session_state.group_start_time = time.time()
+                                for n in st.session_state.pending_start:
+                                    t = timer_dict[n]
+                                    t["start_time"] = st.session_state.group_start_time
+                                    t["running"] = True
+                                st.session_state.pending_start.clear()
+                        else:
+                            timer["start_time"] = time.time() - timer["elapsed"]
+                            timer["running"] = True
+
             with btn_cols[1]:
                 if st.button("P", key=f"pause_{name}"):
                     if timer["running"]:
@@ -143,18 +158,13 @@ for row in layout:
                         timer["running"] = False
                         timer["rounds"].append(timer["elapsed"])
                         timer["color_offset"] = timer["elapsed"]
+
             with btn_cols[2]:
                 if st.button("R", key=f"reset_{name}"):
                     timer["running"] = False
                     timer["elapsed"] = 0.0
                     timer["rounds"] = []
                     timer["color_offset"] = 0.0
-
-            # Rundenzeiten als R1: mm:ss etc.
-            if timer["rounds"]:
-                st.markdown('<div class="rounds">', unsafe_allow_html=True)
-                for j, r in enumerate(timer["rounds"], 1):
-                    st.markdown(f'<span>R{j}: {format_time(r)}</span>', unsafe_allow_html=True)
-                st.markdown('</div>', unsafe_allow_html=True)
+                    timer["start_time"] = None
 
             st.markdown("</div>", unsafe_allow_html=True)
