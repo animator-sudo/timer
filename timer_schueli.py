@@ -38,13 +38,13 @@ st.markdown(
     f"""
     <div class="title-row">
         <h1>Ilgen Lions Timer</h1>
-        <div class="master-timer">⏱ Master: {format_time(master_elapsed)}</div>
+        <div class="master-timer">⏱ Spielzeit: {format_time(master_elapsed)}</div>
     </div>
     """,
     unsafe_allow_html=True
 )
 
-st.write("Drücke 'S' zum Starten, 'P' zum Pausieren und 'R' zum Zurücksetzen.")
+st.write("Sobald 6 Kinder gestartet, starteten die Timer")
 
 # CSS Styling
 st.markdown("""
