@@ -1,18 +1,22 @@
 import streamlit as st
 import time
 import base64
+from streamlit_autorefresh import st_autorefresh
+
+# Auto-Refresh alle 1 Sekunde, damit Timer dynamisch aktualisiert werden
+st_autorefresh(interval=1000, key="refresh")
 
 # Seiteneinstellungen
 st.set_page_config(page_title="Ilgen Lions Timer", layout="wide")
 st.title("Ilgen Lions Timer")
 st.write("Drücke 'Start', um den Timer zu starten, 'Pause', um anzuhalten und 'Reset', um den Timer zurückzusetzen.")
 
-# Hintergrundbild laden
+# Hintergrundbild laden und Base64 kodieren
 with open("ilgen_lions.png", "rb") as f:
     img_data = f.read()
 b64 = base64.b64encode(img_data).decode()
 
-# CSS für iPad-Hochformat-Optimierung
+# CSS für iPad-Hochformat-Optimierung und Buttons
 st.markdown(
     f"""
     <style>
@@ -90,6 +94,7 @@ def get_bg_color(elapsed, running):
     else:
         return "red"
 
+# Layout mit festen 4 Zeilen
 layout = [
     ["Charlotte", "Filippa", "Annabelle"],
     ["Noemi"],
@@ -104,7 +109,7 @@ for row in layout:
     for i, name in enumerate(row):
         timer = timer_dict[name]
 
-        # Wenn Timer läuft, berechne verstrichene Zeit lokal hier (kein Refresh!)
+        # Timer läuft: laufende Zeit berechnen
         if timer["running"]:
             timer["elapsed"] = time.time() - timer["start_time"]
 
@@ -119,7 +124,7 @@ for row in layout:
             with btn_cols[0]:
                 if st.button("Start", key=f"start_{name}"):
                     if not timer["running"]:
-                        # Weiterzählen
+                        # Falls Zeit > 0, nicht neu starten, sondern weiterlaufen lassen
                         timer["start_time"] = time.time() - timer["elapsed"]
                         timer["running"] = True
             with btn_cols[1]:
@@ -127,7 +132,7 @@ for row in layout:
                     if timer["running"]:
                         timer["elapsed"] = time.time() - timer["start_time"]
                         timer["running"] = False
-                        # Rundenzeit sofort speichern
+                        # Rundenzeit direkt speichern
                         timer["rounds"].append(timer["elapsed"])
             with btn_cols[2]:
                 if st.button("Reset", key=f"reset_{name}"):
