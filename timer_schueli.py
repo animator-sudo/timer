@@ -4,7 +4,7 @@ import base64
 from streamlit_autorefresh import st_autorefresh
 
 # Auto-Refresh alle 1 Sekunde
-st_autorefresh(interval=800, key="refresh")
+st_autorefresh(interval=1000, key="refresh")
 
 st.set_page_config(page_title="Ilgen Lions Timer", layout="wide")
 st.title("Ilgen Lions Timer")
@@ -78,8 +78,8 @@ st.markdown(
 
 children_names = [
     "Charlotte", "Filippa", "Annabelle",        # Zeile 1
-    "Noemi", "Ida", "Meliah",                   # Zeile 2
-    "Luisa", "Elena","Ella",                    # Zeile 3
+    "Noemi", "Ida", "Meliah",                    # Zeile 2
+    "Luisa", "Elena", "Ella",                     # Zeile 3
     "Uliana"                                    # Zeile 4
 ]
 
@@ -111,7 +111,6 @@ def format_time(seconds):
     return f"{minutes:02d}:{sec:02d}"
 
 def get_bg_color(elapsed, running, color_offset):
-    # Farb-Balken startet immer bei (elapsed - color_offset)
     adj_time = elapsed - color_offset
     if not running:
         return "white"
@@ -126,8 +125,8 @@ def get_bg_color(elapsed, running, color_offset):
 
 layout = [
     ["Charlotte", "Filippa", "Annabelle"],
-    ["Noemi"],
-    ["Luisa", "Elena", "Ella", "Ida", "Meliah"],
+    ["Noemi", "Ida", "Meliah"],
+    ["Luisa", "Elena", "Ella"],
     ["Uliana"]
 ]
 
@@ -160,7 +159,6 @@ for row in layout:
                         timer["elapsed"] = time.time() - timer["start_time"]
                         timer["running"] = False
                         timer["rounds"].append(timer["elapsed"])
-                        # Farb-Offset setzen, damit Farbe wieder bei weiß beginnt
                         timer["color_offset"] = timer["elapsed"]
             with btn_cols[2]:
                 if st.button("R", key=f"reset_{name}"):
