@@ -9,7 +9,7 @@ st.set_page_config(page_title="Ilgen Lions Timer", layout="wide")
 st.title("Ilgen Lions Timer")
 st.write("Drücke 'S' zum Starten, 'P' zum Pausieren und 'R' zum Zurücksetzen.")
 
-# CSS: Grauer Hintergrund, kompakter, kleinere Schriften, Buttons S, P, R
+# CSS: Grauer Hintergrund + kompakte Darstellung
 st.markdown(
     """
     <style>
@@ -49,13 +49,6 @@ st.markdown(
         font-size: 16px !important;
         margin: 2px 0 6px 0;
     }
-    .row-container > div > div[role="listitem"] {
-        padding-bottom: 0px !important;
-        margin-bottom: 0px !important;
-    }
-    .css-1lcbmhc.e1fqkh3o3 {
-        margin-bottom: 2px !important;
-    }
     .round-time {
         font-size: 14px;
         margin: 0 0 2px 0;
@@ -66,53 +59,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-children_names = [
-    "Charlotte", "Filippa", "Annabelle",        # Zeile 1
-    "Noemi", "Ida", "Meliah",                    # Zeile 2
-    "Luisa", "Elena", "Ella",                     # Zeile 3
-    "Uliana"                                    # Zeile 4
-]
-
-if "timers" not in st.session_state:
-    st.session_state.timers = []
-
-name_set = set(t["name"] for t in st.session_state.timers)
-for name in children_names:
-    if name not in name_set:
-        st.session_state.timers.append({
-            "name": name,
-            "elapsed": 0.0,
-            "running": False,
-            "start_time": None,
-            "rounds": [],
-            "color_offset": 0.0
-        })
-    else:
-        for t in st.session_state.timers:
-            if t["name"] == name:
-                if "rounds" not in t:
-                    t["rounds"] = []
-                if "color_offset" not in t:
-                    t["color_offset"] = 0.0
-
-def format_time(seconds):
-    minutes = int(seconds // 60)
-    sec = int(seconds % 60)
-    return f"{minutes:02d}:{sec:02d}"
-
-def get_bg_color(elapsed, running, color_offset):
-    adj_time = elapsed - color_offset
-    if not running:
-        return "white"
-    if adj_time < 60:
-        return "white"
-    elif adj_time < 120:
-        return "yellow"
-    elif adj_time < 180:
-        return "orange"
-    else:
-        return "red"
-
+# Kind-Layout: 4 Zeilen
 layout = [
     ["Charlotte", "Filippa", "Annabelle"],
     ["Noemi", "Ida", "Meliah"],
@@ -120,8 +67,51 @@ layout = [
     ["Uliana"]
 ]
 
+# Initialisierung
+if "timers" not in st.session_state:
+    st.session_state.timers = []
+    st.session_state.start_trigger_count = 0
+    st.session_state.group_start_time = None
+
+# Timer-Speicherung vorbereiten
+existing_names = {t["name"] for t in st.session_state.timers}
+for row in layout:
+    for name in row:
+        if name not in existing_names:
+            st.session_state.timers.append({
+                "name": name,
+                "elapsed": 0.0,
+                "running": False,
+                "start_time": None,
+                "rounds": [],
+                "color_offset": 0.0
+            })
+
+# Hilfsfunktionen
+def format_time(seconds):
+    minutes = int(seconds // 60)
+    sec = int(seconds % 60)
+    return f"{minutes:02d}:{sec:02d}"
+
+def get_bg_color(elapsed, running, color_offset):
+    adj = elapsed - color_offset
+    if not running:
+        return "white"
+    if adj >= 300:
+        return "violet"
+    elif adj >= 180:
+        return "red"
+    elif adj >= 120:
+        return "orange"
+    elif adj >= 60:
+        return "yellow"
+    else:
+        return "white"
+
+# Umwandlung zu Dictionary
 timer_dict = {t["name"]: t for t in st.session_state.timers}
 
+# Timeranzeige nach Layout
 for row in layout:
     cols = st.columns(len(row))
     for i, name in enumerate(row):
@@ -131,19 +121,26 @@ for row in layout:
             timer["elapsed"] = time.time() - timer["start_time"]
 
         bg_color = get_bg_color(timer["elapsed"], timer["running"], timer["color_offset"])
+        name_color = "limegreen" if timer["running"] else "white"
 
         with cols[i]:
-            color_name = "limegreen" if timer["running"] else "white"
             st.markdown(f'<div class="timer-box" style="background-color: {bg_color};">', unsafe_allow_html=True)
-            st.markdown(f'<h2 style="color: {color_name}; margin-bottom: 0.3rem;">{timer["name"]}</h2>', unsafe_allow_html=True)
+            st.markdown(f'<h2 style="color: {name_color}; margin-bottom: 0.3rem;">{timer["name"]}</h2>', unsafe_allow_html=True)
             st.subheader(format_time(timer["elapsed"]))
 
             btn_cols = st.columns([1,1,1])
             with btn_cols[0]:
                 if st.button("S", key=f"start_{name}"):
                     if not timer["running"]:
-                        timer["start_time"] = time.time() - timer["elapsed"]
-                        timer["running"] = True
+                        st.session_state.start_trigger_count += 1
+                        if st.session_state.group_start_time is None and st.session_state.start_trigger_count >= 6:
+                            st.session_state.group_start_time = time.time()
+                            for t in st.session_state.timers:
+                                t["start_time"] = st.session_state.group_start_time
+                                t["running"] = True
+                        elif st.session_state.group_start_time is not None:
+                            timer["start_time"] = time.time()
+                            timer["running"] = True
             with btn_cols[1]:
                 if st.button("P", key=f"pause_{name}"):
                     if timer["running"]:
