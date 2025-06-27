@@ -92,7 +92,7 @@ st.markdown("""
 
 # Layout der Kinder (Zeilen)
 layout = [
-    ["Charlotte", "Filippa", "Annabelle"],
+    ["Charlotte", "Filippa"],
     ["Noemi", "Ida", "Meliah"],
     ["Luisa", "Elena", "Ella"],
     ["Uliana"]
